@@ -208,11 +208,35 @@ export const Album = () => {
       }
     }
 
+    const countryIndex = countriesInGroup.findIndex((c) => c.code === selectedCountry.code);
+    const prevCountry = countryIndex > 0 ? countriesInGroup[countryIndex - 1] : null;
+    const nextCountry = countryIndex < countriesInGroup.length - 1 ? countriesInGroup[countryIndex + 1] : null;
+
     return (
       <div className="p-4 pb-24">
-        <button onClick={() => setSelectedCountry(null)} className="mb-4 text-accent hover:underline">
-          ← Volver
-        </button>
+        <div className="flex items-center justify-between mb-4">
+          <button onClick={() => setSelectedCountry(null)} className="text-accent hover:underline">
+            ← Volver
+          </button>
+          <div className="flex gap-2">
+            {prevCountry && (
+              <button
+                onClick={() => setSelectedCountry(prevCountry)}
+                className="text-accent hover:underline"
+              >
+                ← {prevCountry.code}
+              </button>
+            )}
+            {nextCountry && (
+              <button
+                onClick={() => setSelectedCountry(nextCountry)}
+                className="text-accent hover:underline"
+              >
+                {nextCountry.code} →
+              </button>
+            )}
+          </div>
+        </div>
         <div className="mb-4">
           <h1 className="text-xl font-bold">{selectedCountry.name}</h1>
           <p className="text-gray-400 text-sm">Grupo {selectedCountry.group}</p>
