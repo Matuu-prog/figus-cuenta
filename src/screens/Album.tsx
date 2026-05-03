@@ -208,9 +208,9 @@ export const Album = () => {
       }
     }
 
-    const countryIndex = countriesInGroup.findIndex((c) => c.code === selectedCountry.code);
-    const prevCountry = countryIndex > 0 ? countriesInGroup[countryIndex - 1] : null;
-    const nextCountry = countryIndex < countriesInGroup.length - 1 ? countriesInGroup[countryIndex + 1] : null;
+    const countryIndex = countries.findIndex((c) => c.code === selectedCountry.code);
+    const prevCountry = countryIndex > 0 ? countries[countryIndex - 1] : countries[countries.length - 1];
+    const nextCountry = countryIndex < countries.length - 1 ? countries[countryIndex + 1] : countries[0];
 
     return (
       <div className="p-4 pb-24">
