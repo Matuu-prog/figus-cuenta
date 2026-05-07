@@ -24,6 +24,49 @@ export const Repetidas = () => {
     }
   };
 
+  const handleCopyAll = async () => {
+    const paisMap: Record<string, string[]> = {};
+    const fwcList: string[] = [];
+    const ccList: string[] = [];
+
+    repeated.forEach((figu) => {
+      if (figu.type === 'pais' && figu.pais) {
+        if (!paisMap[figu.pais]) paisMap[figu.pais] = [];
+        paisMap[figu.pais].push(figu.numero);
+      } else if (figu.type === 'fwc') {
+        fwcList.push(figu.numero);
+      } else if (figu.type === 'cc') {
+        ccList.push(figu.numero);
+      }
+    });
+
+    const sortNumerically = (arr: string[]) =>
+      arr.sort((a, b) => parseInt(a.replace(/\D/g, '')) - parseInt(b.replace(/\D/g, '')));
+
+    const lines: string[] = [];
+
+    if (fwcList.length > 0) {
+      lines.push('FWC:');
+      lines.push(sortNumerically(fwcList).join(','));
+    }
+
+    if (ccList.length > 0) {
+      lines.push('CC:');
+      lines.push(sortNumerically(ccList).join(','));
+    }
+
+    const sortedPaises = Object.entries(paisMap)
+      .map(([code, nums]) => ({ code, name: getCountryName(code), nums }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    sortedPaises.forEach(({ name, nums }) => {
+      lines.push(`${name}:`);
+      lines.push(sortNumerically(nums).join(','));
+    });
+
+    await navigator.clipboard.writeText(lines.join('\n'));
+  };
+
   const filtered = repeated.filter((figu) => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.trim().toLowerCase();
@@ -52,7 +95,15 @@ export const Repetidas = () => {
     <div className="p-4 pb-24">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold text-accent">Repetidas</h1>
-        <span className="bg-accent text-black px-2 py-1 rounded font-bold">{totalRepeated}</span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleCopyAll}
+            className="bg-accent/20 text-accent hover:bg-accent/30 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+          >
+            Copiar
+          </button>
+          <span className="bg-accent text-black px-2 py-1 rounded font-bold">{totalRepeated}</span>
+        </div>
       </div>
 
       <div className="relative mb-4">
