@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useCollection } from '../hooks/useCollection';
-import { countries, groups, Group, Country, fwcCodes, ccCodes } from '../data/album';
+import { countries, groups, Group, Country, fwcCodes, ccCodes, getFlag } from '../data/album';
 
 const FiguCard = ({
   label,
@@ -238,7 +238,7 @@ export const Album = () => {
           </div>
         </div>
         <div className="mb-4">
-          <h1 className="text-xl font-bold">{selectedCountry.name}</h1>
+          <h1 className="text-xl font-bold">{getFlag(selectedCountry.code)} {selectedCountry.name}</h1>
           <p className="text-gray-400 text-sm">Grupo {selectedCountry.group}</p>
         </div>
 
@@ -368,7 +368,7 @@ export const Album = () => {
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-bold">{country.code}</h3>
+                      <h3 className="font-bold">{getFlag(country.code)} {country.code}</h3>
                       <p className="text-xs text-gray-400">{country.name}</p>
                     </div>
                     {obtained === 20 ? (

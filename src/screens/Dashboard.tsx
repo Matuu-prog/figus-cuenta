@@ -1,9 +1,9 @@
 import { useCollection } from '../hooks/useCollection';
 import { ProgressBar } from '../components/ProgressBar';
-import { groups, Group } from '../data/album';
+import { countries, groups, Group, fwcCodes, ccCodes, getFlag } from '../data/album';
 
 export const Dashboard = () => {
-  const { stats, reset } = useCollection();
+  const { stats, reset, collection } = useCollection();
   const percentage = Math.round((stats.totalObtained / stats.total) * 100);
 
   return (
@@ -72,11 +72,66 @@ export const Dashboard = () => {
 
       <button
         onClick={() => {
+          const missingPais: Record<string, string[]> = {};
+          const missingFwc: string[] = [];
+          const missingCc: string[] = [];
+
+          for (const code of fwcCodes) {
+            if (!collection.fwc[code]) missingFwc.push(code);
+          }
+
+          for (const code of ccCodes) {
+            if (!collection.cc[code]) missingCc.push(code);
+          }
+
+          for (const country of countries) {
+            const cd = collection.paises[country.code] || {};
+            for (let i = 1; i <= 20; i++) {
+              if (!cd[`${i}`]) {
+                if (!missingPais[country.code]) missingPais[country.code] = [];
+                missingPais[country.code].push(`${i}`);
+              }
+            }
+          }
+
+          const lines: string[] = ['FALTANTES', ''];
+
+          if (missingFwc.length > 0) {
+            lines.push('FWC:');
+            lines.push(missingFwc.join(','));
+          }
+
+          if (missingCc.length > 0) {
+            lines.push('CC:');
+            lines.push(
+              missingCc
+                .sort((a, b) => parseInt(a.replace(/\D/g, '')) - parseInt(b.replace(/\D/g, '')))
+                .join(',')
+            );
+          }
+
+          Object.entries(missingPais)
+            .map(([code, nums]) => ({ code, name: countries.find((c) => c.code === code)!.name, nums }))
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .forEach(({ code, name, nums }) => {
+              lines.push(`${name} ${getFlag(code)}:`);
+              lines.push(nums.sort((a, b) => parseInt(a) - parseInt(b)).join(','));
+            });
+
+          navigator.clipboard.writeText(lines.join('\n'));
+        }}
+        className="mt-8 w-full py-3 bg-accent/10 text-accent rounded-xl text-sm font-medium hover:bg-accent/20 transition-colors"
+      >
+        Copiar faltantes
+      </button>
+
+      <button
+        onClick={() => {
           if (confirm('¿Resetear toda la colección?')) {
             reset();
           }
         }}
-        className="mt-8 w-full py-3 text-gray-500 text-sm hover:text-red-400"
+        className="mt-4 w-full py-3 text-gray-500 text-sm hover:text-red-400"
       >
         Resetear Colección
       </button>

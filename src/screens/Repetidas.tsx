@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useCollection } from '../hooks/useCollection';
-import { countries } from '../data/album';
+import { countries, getFlag } from '../data/album';
 
 export const Repetidas = () => {
   const { getRepeated, setFigu, getFigu } = useCollection();
@@ -63,6 +63,10 @@ export const Repetidas = () => {
       lines.push(`${name}:`);
       lines.push(sortNumerically(nums).join(','));
     });
+
+    if (lines.length > 0) {
+      lines.unshift('REPETIDAS', '');
+    }
 
     await navigator.clipboard.writeText(lines.join('\n'));
   };
@@ -150,7 +154,7 @@ export const Repetidas = () => {
                 {figu.pais ? `${figu.pais}-${figu.numero}` : figu.numero}
               </span>
               {figu.pais && (
-                <span className="ml-2 text-gray-400 text-sm">{getCountryName(figu.pais)}</span>
+                <span className="ml-2 text-gray-400 text-sm">{getFlag(figu.pais)} {getCountryName(figu.pais)}</span>
               )}
             </div>
             <div className="flex items-center gap-2">
